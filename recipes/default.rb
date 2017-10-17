@@ -37,8 +37,14 @@ when 'ubuntu'
     not_if { File.directory?("/usr/src/linux-headers-#{kernel}") }
   end
 
-  package 'ubuntu-zfs' do
-    action :install
+  if node['platform_version'] == '16.04'
+    package 'zfsutils-linux' do
+      action :install
+    end
+  else
+    package 'ubuntu-zfs' do
+      action :install
+    end
   end
 
   group node['zol']['dev_group'] do
