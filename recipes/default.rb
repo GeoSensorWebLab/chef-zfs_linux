@@ -21,13 +21,15 @@ case node['platform']
 when 'ubuntu'
   include_recipe 'apt'
 
-  apt_repository 'zfs-native' do
-    uri 'http://ppa.launchpad.net/zfs-native/stable/ubuntu'
-    distribution node['lsb']['codename']
-    components ['main']
-    keyserver 'keyserver.ubuntu.com'
-    key 'F6B0FC61'
-    action :add
+  if node['platform_version'].to_f <= 15.10
+    apt_repository 'zfs-native' do
+      uri 'http://ppa.launchpad.net/zfs-native/stable/ubuntu'
+      distribution node['lsb']['codename']
+      components ['main']
+      keyserver 'keyserver.ubuntu.com'
+      key 'F6B0FC61'
+      action :add
+    end
   end
 
   # Ensure headers for the current kernel are installed
@@ -37,7 +39,7 @@ when 'ubuntu'
     not_if { File.directory?("/usr/src/linux-headers-#{kernel}") }
   end
 
-  if node['platform_version'] == '16.04'
+  if node['platform_version'].to_f >= 15.10
     package 'zfsutils-linux' do
       action :install
     end
